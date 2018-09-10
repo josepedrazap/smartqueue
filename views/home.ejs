@@ -2,9 +2,14 @@
 <html lang="en" dir="ltr">
   <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+
     <meta charset="utf-8">
     <title>Hola </title>
   </head>
+
+  <input type="text" name="" value="<%=usr_id%>">
 
   <div class="header">
     <a href="#default" class="logo">SmartQueue</a>
@@ -29,35 +34,117 @@
           <th scope="col">Personas en la queue</th>
           <th scope="col">Tiempo promedio de espera</th>
           <th scope="col">Tiempo promedio de arrivo</th>
-          <th scope="col">Ver</th>
+          <th scope="col">Opciones</th>
         </tr>
       </thead>
-      <tbody>
-        <% for(var i=0; i<queues.length; i++) {%>
-
-        <tr>
-          <th scope="row"><%= queues[i].name %></th>
-          <td><%= i %></td>
-          <td>.</td>
-          <td>.</td>
-          <td>
-            <button type="button" onclick="run_qr('<%= queues[i]._id%>')" class="btn btn-warning" name="button">Lanzar qr</button>
-            <button type="button" class="btn btn-info" name="button">Ver queue</button>
-            <button type="button" class="btn btn-danger" name="button">Eliminar queue</button>
-          </td>
-        </tr>
-
-        <% } %>
+      <tbody id="data_table">
       </tbody>
 
     </table>
   </div>
   </body>
 </html>
-<script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/javascripts/socket.io/socket.io.js"></script>
+<script src="/javascripts/qr_render/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+window.onload = data_table('<%=usr_id%>');
+
+  $(function (){
+    socket = io();
+    socket.on('<%=usr_id%>', function(msg){
+      if(msg[0] == '$' && msg[1] == '$' && msg[2] == '$'){
+        count_nodes(msg.substring(3));
+      }else{
+        alert('msg pero no');
+      }
+    });
+  });
+  socket = io();
+  socket.onmessage = function(event) {
+    var message = event.data;
+    console.log(message);
+  };
+
+  function count_nodes(id){
+      axios.get('/run/queue/count_nodes?id=' + id)
+      .then(function (response){
+        var id_ = 'cnodes' + id;
+        document.getElementById(id_).innerHTML = response.data;
+      })
+      .catch(function (error){})
+      .then(function(){});
+  };
+
+  function data_table(user_id){
+    var data;
+    axios.get('/run/queue_header/list?id_user=' + user_id)
+          .then(function (response) {
+            data = response.data;
+            document.getElementById("data_table").innerHTML="";
+            for(var i = 0; i < data.length; i++){
+              var tr = document.createElement('TR');
+                tr.innerHTML = `<tr>
+                <td>` + data[i].name + `</td>
+                <td id="cnodes`+ data[i]._id +`"></td>
+                <td>.</td>
+                <td>.</td>
+                <td>
+                <button type="button" onclick="run_screen('`+ data[i]._id +`')" class="btn btn-submit" name="button"><i class="fas fa-desktop"></i>
+
+
+
+</button>
+                  <button type="button" onclick="run_qr('`+ data[i]._id +`')" class="btn btn-warning" name="button"><i class="fas fa-qrcode"></i>
+
+</button>
+                  <button type="button" onclick="show_queue('`+ data[i]._id +`')" class="btn btn-info" name="button"><i class="far fa-eye"></i>
+
+</button>
+                  <button type="button" onclick="delete_queue('`+ data[i]._id +`', '<%=usr_id%>')" class="btn btn-danger" name="button"><i class="fas fa-trash-alt"></i>
+
+</button>
+                </td>
+              </tr>`;
+              document.getElementById("data_table").appendChild(tr);
+              count_nodes(data[i]._id);
+            }
+
+          })
+          .catch(function (error) {
+
+          })
+          .then(function () {
+
+          });
+
+  }
+
   function run_qr(queue_id){
     window.open('/home/run_qr?queue_id=' + queue_id, '_blank');
+  };
+  function show_queue(queue_id){
+    window.open('/run/queue/list?queue_id=' + queue_id, '_blank');
+  };
+  function run_screen(queue_id){
+    window.open('/home/run_screen?queue_id=' + queue_id, '_blank');
+  };
+  function delete_queue(queue_id, user_id){
+    axios.get('/run/queue/delete_queue?queue_id=' + queue_id)
+          .then(function (response) {
+            data_table(user_id);
+            console.log(user_id);
+          })
+          .catch(function (error) {
+
+          })
+          .then(function () {
+
+          });
   }
+
 </script>
 <style>
 /* Style the header with a grey background and some padding */

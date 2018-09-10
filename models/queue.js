@@ -4,10 +4,11 @@ var Schema = mongoose.Schema;
 
 var queueSchema = new Schema(
   {
-    id_user: {type: Schema.Types.ObjectId},
-    id_next: {type: Schema.Types.ObjectId},
+    id_user: {type: Schema.Types.ObjectId, ref: 'users'},
+    id_next: {type: Schema.Types.ObjectId, ref: 'queue'},
     arrive: {type: Date, default: Date.now},
-    id_queue: {type: Schema.Types.ObjectId},
+    number: {type: Number},
+    id_queue: {type: Schema.Types.ObjectId, ref: 'queue_header'},
     status: {type: Boolean},
     top: {type: Boolean}
   }

@@ -9,6 +9,8 @@ router.get('/queue/list', queue_controller.node_list);
 
 router.get('/queue_header/list', queue_controller.queue_list);
 
+router.get('/queue/count_nodes', queue_controller.count_nodes);
+
 router.get('/queue/user_list/:id_queue/', queue_controller.user_list);
 
 router.get('/queue/enqueue', queue_controller.enqueue);
@@ -24,5 +26,7 @@ router.get('/users/list', user_controller.user_list);
 router.get('/users/id:/detail', user_controller.user_detail);
 
 router.post('/users/create', user_controller.create_user);
+
+router.get('/p', queue_controller.prueba);
 
 module.exports = router;

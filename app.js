@@ -17,7 +17,7 @@ var io = require('socket.io')(server);
 
 //Set up mongoose connection
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb://localhost/queue-example3';
+var mongoDB = 'mongodb+srv://usuario1:root12345@cluster0-a2ueb.mongodb.net/test?retryWrites=true';
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;

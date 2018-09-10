@@ -20,19 +20,37 @@
       <h2 class=".text-justify"><%=user%> vamos a crear una queue</h2>
     </div>
   </div>
-  <div class="container">
-    <div class="col-lg-4">
-      <form class="" action="/run/queue/create_queue" method="post">
-        <div class="form-group">
-          <label for="">Nombre de la queue</label>
-          <input name="usr_id" value="<%=usr_id%>">
-          <input class="form-control" type="text" name="name_queue" value="">
-        </div>
-        <button class="btn btn-submit" type="submit" name="button">Crear</button>
-      </form>
 
-    </div>
-  </div>
+      <form class="" action="/run/queue/create_queue" method="post">
+        <input hidden name="usr_id" value="<%=usr_id%>">
+        <input hidden name="user" value="<%=user%>">
+
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <div class="form-group">
+                <label for="">Nombre de la queue</label>
+                <input class="form-control" type="text" name="name_queue" value="" required>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <div class="form-group">
+                <label for="">Alias del codigo qr</label>
+                <input class="form-control" type="text" name="alias_qr_queue" value="" required>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <div class="form-group">
+                <label for="">Dirección geográfica</label>
+                <input class="form-control" type="text" name="direccion_queue" value="" required>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <div class="form-group">
+                <label for="">Descripción</label>
+                <textarea class="form-control" type="text" col="6" name="description_queue" value="" required></textarea>
+              </div>
+              <button class="btn btn-success" type="submit" name="button">Crear</button>
+            </div>
+      </form>
   </body>
 </html>
 <style>
