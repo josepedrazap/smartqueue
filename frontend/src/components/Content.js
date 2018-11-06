@@ -4,7 +4,6 @@ import { Provider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom'
-
 class Content extends Component {
 
   static propTypes = {

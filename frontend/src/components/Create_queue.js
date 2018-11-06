@@ -4,6 +4,7 @@ import axios from 'axios'
 import { Redirect } from 'react-router-dom'
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import { withAlert } from "react-alert";
+import logo from '../public/share32.png';
 
 
 class Create_queue extends Component {
@@ -89,6 +90,9 @@ class Create_queue extends Component {
   }
 
   render () {
+    if(window.sessionStorage.getItem("token") === "0"){
+      return(<Redirect to="login" />)
+    }
     if (this.state.status === 403){
       return(<Redirect to="login" />)
     }
@@ -99,7 +103,14 @@ class Create_queue extends Component {
       <div className="col-md-8 col-sm-10 col-xs-12 Cq">
         <div className="card">
         <div className="card-header text-white bg-dark">
-          Creando una nueva cola
+          <div className="row">
+            <div className="col-md-1">
+              <img className="App-logo-login" src={logo} />
+            </div>
+            <div className="col-md-11 mt-2">
+              Creando una queue
+            </div>
+          </div>
         </div>
           <div className="row">
                 <div className="col-md-6">

@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import logo from '../logo.svg'
+import logo from '../public/share32.png';
 import { Redirect } from 'react-router-dom'
 import axios from 'axios'
+import { withAlert } from "react-alert";
 
 class Register extends Component {
   constructor(props){
@@ -31,36 +32,42 @@ class Register extends Component {
     })
   }
   handleRegister(){
-      if(this.state.pass !== this.state.pass_rpt){
-        alert('Las contraseñas no coinciden');
-      }
-      axios({
-        url: 'http://localhost:3001/auth/create_user',
-        method: 'post',
-        data: {
-          user: this.state.user,
-          pass: this.state.pass,
-          pass_rpt: this.state.pass_rpt
-        }
-      })
-      .then((response) => {
-        if(response.status === 200){
-          alert('El usuario se ha creado con éxito')
-          this.setState({
-            status: 1
-          })
-        }
-        if(response.status === 500){
-          alert('Ha ocurrido un error')
-        }
-        if(response.status === 600){
-          alert('El usuario ya existe')
-        }
-      })
-      .catch((error) => {
+      if(this.state.user.length < 6){
+        this.props.alert.error('El nombre debe contener mínimo 6 caracteres!')
+      }else if(this.state.pass.length < 6){
+        this.props.alert.error('La contraseña debe contener mínimo 6 caracteres!')
+      }else if(this.state.pass !== this.state.pass_rpt){
+        this.props.alert.error('Las contraseñas no coinciden!')
+      }else{
+        axios({
+          url: '/auth/create_user',
+          method: 'post',
+          data: {
+            user: this.state.user,
+            pass: this.state.pass,
+            pass_rpt: this.state.pass_rpt
+          }
+        })
+        .then((response) => {
 
-      });
-  }
+          if(response.data === 500){
+            alert('Ha ocurrido un error')
+          }else if(response.data === 600){
+            this.props.alert.error('El usuario ya existe!')
+
+          }else{
+            this.setState({
+              status: 1
+            })
+            this.props.alert.success('Registrado con éxito!')
+          }
+
+        })
+        .catch((error) => {
+
+        });
+    }
+}
     render(){
 
       if(this.state.status === 1){
@@ -107,4 +114,4 @@ class Register extends Component {
       )
     }
 }
-export default Register;
+export default withAlert(Register);

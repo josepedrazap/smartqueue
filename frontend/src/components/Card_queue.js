@@ -22,9 +22,21 @@ class Card_queue extends Component {
     this.handleQr = this.handleQr.bind(this);
     this.handleScreen = this.handleScreen.bind(this);
     this.handleView = this.handleView.bind(this);
+    this.handleDequeue = this.handleDequeue.bind(this);
+    this.handleCount_nodes = this.handleCount_nodes.bind(this);
+
+    this.handleCount_nodes();
   }
+
+  static PropTypes = {
+    title: PropTypes.string.isRequired,
+    n_nodes: PropTypes.string.isRequired,
+    address: PropTypes.string.isRequired,
+    queue_id: PropTypes.string.isRequired,
+  };
+
   componentDidMount(){
-      var url = 'http://localhost:3001/run/queue/count_nodes?id=' + this.state.id;
+      var url = 'run/queue/count_nodes?id=' + this.state.id;
       signal_n_nodes(
         (err, aux1) => {
           //if(aux1[0] === '$' && aux1[1] === '$' && aux1[2] === '$'){
@@ -72,16 +84,36 @@ class Card_queue extends Component {
           }
       });
   }
-  static PropTypes = {
-    title: PropTypes.string.isRequired,
-    n_nodes: PropTypes.string.isRequired,
-    address: PropTypes.string.isRequired,
-    queue_id: PropTypes.string.isRequired,
-  };
+  handleDequeue(){
+    axios.get('/run/queue/dequeue?id=' + this.state.id, {
+      headers: {
+        authorization: 'beare '+ window.sessionStorage.getItem("token")
+      }
+    })
+    .then((response) => {
+      if(response.status === 200){
+        console.log(response);
 
+        if(response.data === "ok"){
+          this.props.alert.success('Desencolado con éxito')
+        }
+        if(response.data === "vacia"){
+          this.props.alert.show('No hay nadie en la cola')
+        }
+        this.handleCount_nodes();
+
+      }
+    })
+    .catch(function (error) {
+
+    })
+    .then(function () {
+
+    });
+  };
   handleDelete(){
 
-    axios.get('http://localhost:3001/run/queue/delete_queue?queue_id=' + this.state.id, {
+    axios.get('/run/queue/delete_queue?queue_id=' + this.state.id, {
       headers: {
         authorization: 'beare '+ window.sessionStorage.getItem("token")
       }
@@ -101,10 +133,10 @@ class Card_queue extends Component {
       });
   }
   handleQr(){
-    window.open('http://localhost:3001/screen/run_qr?queue_id=' + this.state.id, '_blank');
+    window.open('/screen/run_qr?queue_id=' + this.state.id, '_blank');
   }
   handleScreen(){
-    window.open('http://localhost:3001/screen/run_screen?queue_id=' + this.state.id, '_blank');
+    window.open('/screen/run_screen?queue_id=' + this.state.id, '_blank');
   }
   handleView(){
     if(this.state.status === 0){
@@ -117,7 +149,21 @@ class Card_queue extends Component {
       })
     }
   }
-
+  handleCount_nodes(){
+    var url = 'run/queue/count_nodes?id=' + this.state.id;
+    fetch(url, {
+      headers: {
+        authorization: 'beare '+ window.sessionStorage.getItem("token")
+      }
+    })
+    .then((response) => {
+       console.log(response)
+      return response.json()
+    })
+    .then((data) => {
+      this.setState({ c_nodes: data })
+    });
+  }
   render(){
     if(this.state.status === 1){
       return(<Redirect to='/home' />)
@@ -154,6 +200,10 @@ class Card_queue extends Component {
               <p><i class="fas fa-map-pin"></i> {this.props.address}</p>
               <p><i class="fas fa-users"></i> {this.state.c_nodes}</p>
               <p><i class="far fa-file-alt"></i> {this.props.description}</p>
+
+            </div>
+            <div>
+              <button type="button" onClick={this.handleDequeue} className="btn btn-success col-md-12">Dequeue</button>
             </div>
           </div>
           <div className="card-footer bg-dark">

@@ -19,7 +19,7 @@ class App extends Component {
     const { children } = this.props;
     return (
         <div>
-          <Navigation/>
+          <Navigation name = {window.sessionStorage.getItem("user")}/>
           <Content body = {children} />
         </div>
     );

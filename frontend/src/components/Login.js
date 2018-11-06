@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
-import logo from '../logo.svg';
+import logo from '../public/share32.png';
 import axios from 'axios'
+import { withAlert } from "react-alert";
 
 class Login extends Component {
     constructor(props){
@@ -31,20 +32,26 @@ class Login extends Component {
     handleLogin(){
       axios({
         method: 'post',
-        url: 'http://localhost:3001/auth/exec',
+        url: '/auth/exec',
         data: {
           user: this.state.user,
           pass: this.state.pass,
         }
       })
       .then((response) => {
+        
+        window.sessionStorage.setItem("token", response.data.token);
+        window.sessionStorage.setItem("user_id", response.data.user_id);
+        window.sessionStorage.setItem("user", response.data.user);
+
         this.setState({
           status: 200
         })
-        console.log(response)
-        window.sessionStorage.setItem("token", response.data.token);
+        this.props.alert.success('Login!')
+
       })
       .catch((error) => {
+        this.props.alert.error('Usuario o contraseña no válidos :(')
 
       })
     }
@@ -53,7 +60,7 @@ class Login extends Component {
     }
     render(){
       if(this.state.status === 200){
-        return(<Redirect to="/home" />);
+        return(<Redirect to="home" />);
       }
       if(this.state.status === 1){
         return(<Redirect to="/register" />);
@@ -95,4 +102,4 @@ class Login extends Component {
       )
     }
 }
-export default Login;
+export default withAlert(Login);

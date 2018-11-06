@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Card_queue from './Card_queue'
-import logo from '../logo.svg'
+import logo from '../public/share64.png';
 import { Provider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
 import { connect } from 'react-redux';
@@ -20,7 +20,7 @@ class Body extends Component {
     }
   }
   componentWillMount() {
-    var url = 'http://localhost:3001/run/queue_header/list?id_user=5b8e116d5730eb76a86c7432';
+    var url = '/run/queue_header/list?id_user=' + window.sessionStorage.getItem("user_id");
     fetch(url, {
       headers: {
         authorization: 'beare '+ window.sessionStorage.getItem("token")
@@ -46,6 +46,10 @@ class Body extends Component {
   }
 
   render(){
+
+    if(window.sessionStorage.getItem("token") === "0"){
+      return(<Redirect to="login" />)
+    }
       const options = {
         timeout: 5000,
         position: "bottom center"
@@ -84,14 +88,17 @@ class Body extends Component {
           return (
             <div className="col-md-4 Div-body-cargando">
               <img className="App-logo" src={logo} />
-              <p className="text-center Font-body-cargando text-white ">No tienes queues :(</p>
+              <p className="text-center Font-body-cargando text-white ">No tienes queues :( </p>
+              <p className="text-center text-white ">Crea una con el botón + que está parpadeando </p>
             </div>
           )
         }else{
           return (
             <div className="col-md-4 Div-body-cargando">
               <img className="App-logo" src={logo} />
-              <p className="text-center Font-body-cargando text-white ">Cargando queues... (Error en la conexión)</p>
+              <p className="text-center Font-body-cargando text-white ">Cargando queues... </p>
+              <p className="text-center text-white ">(Comprobando la conexión) </p>
+
             </div>
           )
         }
